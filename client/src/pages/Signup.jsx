@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { BACKEND_URL } from "../constant";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -15,8 +16,11 @@ const Signup = () => {
       console.log(res);
       localStorage.setItem("userId", res.data.user.id);
       localStorage.setItem("username", res.data.user.name);
+      toast.success("Player signedUp")
       setLoading(false);
-      navigate("/home");
+      setTimeout(()=>{
+        navigate("/home");
+      },1000)
     } catch (error) {
       console.error("Error during signup:", error);
       setLoading(false);
@@ -38,7 +42,7 @@ const Signup = () => {
           onChange={(e) => setName(e.target.value)}
           className="border border-gray-300 py-2 px-3 rounded-lg w-full mb-4 mt-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
         />
-        
+
         <button
           className="py-2 px-4 bg-blue-600 text-white font-bold text-lg rounded-lg w-full transition duration-300 ease-in-out hover:bg-blue-700"
           onClick={sendReq}
@@ -70,6 +74,7 @@ const Signup = () => {
           )}
         </button>
       </div>
+      <Toaster/>
     </div>
   );
 };

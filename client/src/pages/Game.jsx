@@ -3,23 +3,30 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "../constant.js";
 import { MyContext } from "../context.jsx";
+import toast, { Toaster } from "react-hot-toast";
 
 const Game = () => {
   const [number, setNumber] = useState(0);
   const [users, setUsers] = useState([]);
-  const [countdown, setCountdown] = useState(30);
+  const [countdown, setCountdown] = useState(15);
   const [score, setScore] = useState(0);
   const navigate = useNavigate();
-  const { round, setRound, isAllReady, setIsAllReady } = useContext(MyContext);
+  const { round } = useContext(MyContext);
 
   const sendNum = async () => {
-    const res = await axios.post(`${BACKEND_URL}/send-num`, {
-      id: localStorage.getItem("userId"),
-      number,
-    });
-    setNumber(0);
-    console.log(res);
+    try {
+      const res = await axios.post(`${BACKEND_URL}/send-num`, {
+        id: localStorage.getItem("userId"),
+        number,
+      });
+      setNumber(0);
+      toast.success("Number submitted successfully");
+      console.log(res);
+    } catch (error) {
+      toast.error("abe bsdke, dhang se number daal le!,nhi to tera pichhle round wala number jayega");
+    }
   };
+
   useEffect(() => {
     const fetchUser = async () => {
       const res = await axios.get(
@@ -41,6 +48,7 @@ const Game = () => {
     };
     userFetch();
   }, []);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       if (countdown > 0) {
@@ -55,50 +63,47 @@ const Game = () => {
   }, [countdown, navigate]);
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-900 text-white relative">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-lg text-center">
-        <div className="font-bold mb-4 absolute top-4 right-4">
-          <p className="text-1xl md:text-2xl">
-            Time remaining: {countdown} seconds
-          </p>
+    <div className="flex flex-col justify-center h-screen">
+      <div className="flex justify-between sticky top-0 z-20 bg-gray-900 py-2 px-2">
+        <div className="font-bold text-xl border-2 border-white p-2 text-center">
+          Round {round}
         </div>
-        <div className="font-bold mb-4 absolute top-4 left-4">
-          <p className="text-1xl md:text-2xl">
-            {localStorage.getItem("username")}
-            <br />
-            Score-({score})
-          </p>
+        <div className="font-bold text-xl border-2 border-white p-2 text-center">
+          Time remaining: {countdown} seconds
         </div>
-        <div className="text-center absolute left-40 top-20 text-1xl font-bold">Round-{round}</div>
-
-        <label htmlFor="number" className="block text-lg mb-2">
-          Enter your guess number between 0 and 100
-        </label>
-        <input
-          type="number"
-          name="number"
-          id="number"
-          placeholder="Enter your guess"
-          className="border-2 py-2 px-4 rounded-lg text-white mb-4 w-full"
-          value={number}
-          onChange={(e) => setNumber(e.target.value)}
-        />
-        <div className="space-x-4">
-          <button
-            className="py-2 px-6 font-semibold bg-blue-500 hover:bg-blue-700 text-white rounded-lg transition duration-300 ease-in-out"
-            onClick={sendNum}
-          >
-            Submit
-          </button>
+      </div>
+      <div className="flex flex-col justify-center items-center min-h-screen bg-gray-900 text-white">
+        <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md text-center mx-4">
+          <label htmlFor="number" className="block text-lg mb-2">
+            Enter your guess number between 0 and 100
+          </label>
+          <input
+            type="number"
+            name="number"
+            id="number"
+            placeholder="Enter your guess"
+            className="border-2 py-2 px-4 rounded-lg text-white mb-4 w-full bg-gray-700 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={number}
+            onChange={(e) => setNumber(e.target.value)}
+          />
+          <div className="space-x-4">
+            <button
+              className="py-2 px-6 font-semibold bg-blue-500 hover:bg-blue-700 text-white rounded-lg transition duration-300 ease-in-out"
+              onClick={sendNum}
+            >
+              Submit
+            </button>
+          </div>
+          <div className="text-left mt-4 flex flex-wrap gap-2">
+            score-
+            {users.map((item, index) => (
+              <div key={index} className="mb-1">
+                {item.name}: <span className="font-bold">({item.score})</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <div>
-          <br />
-          {users.map((item, index) => (
-            <div>
-              {item.name}:({item.score})
-            </div>
-          ))}
-        </div>
+        <Toaster />
       </div>
     </div>
   );

@@ -35,7 +35,9 @@ const Calculation = () => {
   const [users, setUsers] = useState([]);
   const [calculationText, setCalculationText] = useState("");
   const [showCalculationText, setShowCalculationText] = useState(false);
+  const [winners, setWinners] = useState([]);
   const [loader, setLoader] = useState(true);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     if (localStorage.getItem("ownerId") === localStorage.getItem("userId")) {
@@ -74,12 +76,15 @@ const Calculation = () => {
     updateReady();
   }, []);
   const nextRound = async () => {
+    setLoading(true);
     setRound(round + 1);
-    const res = await axios.post(`${BACKEND_URL}/update-ready`,{
-      id:localStorage.getItem("userId"),ready:true
-    })
+    const res = await axios.post(`${BACKEND_URL}/update-ready`, {
+      id: localStorage.getItem("userId"),
+      ready: true,
+    });
     console.log("game false", res);
     setIsAllReady(false);
+    setLoading(false);
     navigate("/waiting");
   };
   useEffect(() => {
@@ -103,11 +108,13 @@ const Calculation = () => {
             words.length - 3
           )} = ${sum} => ${sum}/${users.length} => ${avg.toFixed(
             2
-          )} => ${avg} * 0.8 => ${finalAnswer.toFixed(
+          )} => ${avg.toFixed(2)} * 0.8 => ${finalAnswer.toFixed(
             2
           )} <br> ${finalAnswer.toFixed(2)} is close to ${
             res.data.user.selectedNum
-          } <br> ${res.data.user.name} is winner`;
+          } <br>
+            winners-
+            ${res.data.users.map((member, idx) => `${member.name}`)}`;
           setCalculationText(newWords);
           setShowCalculationText(true);
         }
@@ -128,23 +135,55 @@ const Calculation = () => {
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-900 text-white">
-      <div className="text-white bg-gray-800 py-10 md:px-5 px-2 md:w-1/2 w-full h-full md:h-3/4">
-        {users.map((item, index) => (
-          <div key={index} className="flex items-center mb-4">
-            <Card name={item.name} />
-            <span className="ml-2 font-bold">{item.name}</span>
-            <span className="ml-2 text-white">
-              Guessed Number - {item.selectedNum}
-            </span>
-          </div>
-        ))}
+      <div className="text-white bg-gray-800 py-10 md:px-5 px-2 md:w-1/2 w-full h-screen md:h-3/4 relative">
+        <div className="flex flex-wrap gap-2 text-2xl">
+          {users.map((item, index) => (
+            <div key={index} className="items-center mb-4 border-2 py-2 px-5 rounded-lg">
+              <h1 className="ml-2 text-white">
+                {item.name}
+              </h1>
+              <Card name={item.selectedNum} />
+            </div>
+          ))}
+        </div>
         <div className="mt-8">
           <h1 className="text-2xl font-bold mb-4">Calculation</h1>
+          <div className="text-2xl">
           {showCalculationText && (
             <TypewriterComponent words={calculationText} />
           )}
+          </div>
         </div>
-        <button onClick={nextRound} className="border-2 px-6 py-2 bg-purple-500 font-bold text-white">Continue to Round 2</button>
+        <button
+          onClick={nextRound}
+          className="w-50 border-2 px-6 py-2 bg-purple-500 font-bold text-white absolute bottom-2"
+        >
+          {" "}
+          {loading ? (
+            <svg
+              className="animate-spin h-5 w-5 mr-3 inline-block text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8H4z"
+              ></path>
+            </svg>
+          ) : (
+            `Continue for round ${round + 1}`
+          )}
+        </button>
       </div>
     </div>
   );

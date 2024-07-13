@@ -22,6 +22,10 @@ app.post("/signup", async (c) => {
   }
   console.log("room", room);
   const { name } = await c.req.json();
+  if(!name){
+    c.status(500);
+    return c.text("name is required");
+  }
   console.log(name);
   try {
     const user = await prisma.user.create({
@@ -118,9 +122,10 @@ app.post("/send-num", async (c) => {
   const body = await c.req.json();
 
   body.number = Number.parseInt(body.number);
-  console.log(body.number);
-  console.log(typeof body.number);
-  console.log(body);
+  if(body.number < 0 || body.number > 100){
+    c.status(500);
+    return c.text("abe dhang se number daal le")
+  }
   try {
     const user = await prisma.user.update({
       where: {
