@@ -4,20 +4,27 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { BACKEND_URL } from "../constant";
 import { motion } from "framer-motion";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { MyContext } from "../context";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 let intervalId;
 let intervalIdForGameStart;
 
 const Lobby = () => {
   const [users, setUsers] = useState([]);
   const [admin, setAdmin] = useState(false);
-  const {isGameStart,setIsGameStart,isAllReady,setIsAllReady} = useContext(MyContext)
+  const [showSlider, setShowSlider] = useState(false);
+  const { isGameStart, setIsGameStart } = useContext(MyContext);
   const navigate = useNavigate();
   const { id } = useParams();
 
   const sendGameStartEvent = async () => {
-    const res = await axios.patch(`${BACKEND_URL}/game-start/${id}`,{game:true});
+    const res = await axios.patch(`${BACKEND_URL}/game-start/${id}`, {
+      game: true,
+    });
     console.log(res);
   };
 
@@ -44,7 +51,7 @@ const Lobby = () => {
     return () => {
       clearInterval(intervalIdForGameStart);
     };
-  }, [id]);
+  }, [id, setIsGameStart]);
 
   useEffect(() => {
     const userFetch = async () => {
@@ -79,6 +86,19 @@ const Lobby = () => {
     });
     toast.success("Room Id copied to Clipboard");
   };
+
+  const settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
+
+  const handleShowSlider = () => {
+    setShowSlider(!showSlider);
+  };
+
   return (
     <div className="flex justify-center items-center h-screen bg-gray-900 text-white px-2">
       <div className="border-2 border-white py-10 px-5 md:px-10 w-full max-w-xl bg-gray-800 rounded-lg shadow-lg">
@@ -96,26 +116,30 @@ const Lobby = () => {
             </h1>
           </div>
         )}
-        <h1 className="text-center text-2xl font-bold mb-4">
-          Players in Lobby...
-        </h1>
-        <div className="border-2 border-gray-700 flex justify-center w-full h-20 items-center overflow-hidden">
-          {users.map((item, index) => (
-            <motion.div
-              key={index}
-              className="inline-block mx-2"
-              initial={{ x: "100%" }}
-              animate={{ x: "-100%" }}
-              transition={{
-                duration: 2,
-                ease: "linear",
-                repeat: Infinity,
-              }}
-            >
+        <h1 className="text-center text-2xl font-bold mb-4">Players in Lobby...</h1>
+        <div className="border-2 border-gray-700 flex gap-2 justify-center w-full h-20 items-center overflow-hidden">
+          {users.slice(0, 2).map((item, index) => (
+            <div key={index}>
               <Card name={item.name} />
-            </motion.div>
+            </div>
           ))}
+          {users.length > 2 && (
+            <div className="cursor-pointer" onClick={handleShowSlider}>
+              +{users.length - 2}
+            </div>
+          )}
         </div>
+        {showSlider && (
+          <div className="mt-4">
+            <Slider {...settings}>
+              {users.map((item, index) => (
+                <div key={index}>
+                  <Card name={item.name} />
+                </div>
+              ))}
+            </Slider>
+          </div>
+        )}
         {admin && (
           <button
             onClick={sendGameStartEvent}
@@ -125,7 +149,7 @@ const Lobby = () => {
           </button>
         )}
       </div>
-      <Toaster/>
+      <Toaster />
     </div>
   );
 };
