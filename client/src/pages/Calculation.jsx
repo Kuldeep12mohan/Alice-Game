@@ -136,7 +136,7 @@ const Calculation = () => {
   return (
     <div className="flex justify-center items-center h-screen bg-gray-900 text-white">
       <div className="text-white bg-gray-800 py-10 md:px-5 px-2 md:w-1/2 w-full h-screen md:h-3/4 relative">
-        <div className="flex flex-wrap gap-2 text-2xl">
+        <div className="flex flex-wrap gap-2 text">
           {users.map((item, index) => (
             <div key={index} className="items-center mb-4 border-2 py-2 px-5 rounded-lg">
               <h1 className="ml-2 text-white">
@@ -148,7 +148,7 @@ const Calculation = () => {
         </div>
         <div className="mt-8">
           <h1 className="text-2xl font-bold mb-4">Calculation</h1>
-          <div className="text-2xl">
+          <div>
           {showCalculationText && (
             <TypewriterComponent words={calculationText} />
           )}
