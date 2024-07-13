@@ -23,7 +23,7 @@ const Game = () => {
       toast.success("Number submitted successfully");
       console.log(res);
     } catch (error) {
-      toast.error("abe bsdke, dhang se number daal le!,nhi to tera pichhle round wala number jayega");
+      toast.error("babu, dhang se number daal do!");
     }
   };
 
