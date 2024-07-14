@@ -6,14 +6,12 @@ import { MyProvider } from './context.jsx';
 import { useNavigate } from 'react-router-dom';
 
 function Root() {
-  const navigate = useNavigate();
   useEffect(() => {
     const handleUserLeaving = (event) => {
       localStorage.removeItem("userId");
       localStorage.removeItem("ownerId");
       localStorage.removeItem("roomId");
       localStorage.removeItem("username");
-      navigate("/")
       console.log("user leaving");
       event.preventDefault();
       event.returnValue = '';
