@@ -8,8 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 const Game = () => {
   const [number, setNumber] = useState(0);
   const [users, setUsers] = useState([]);
-  const [countdown, setCountdown] = useState(15);
-  const [score, setScore] = useState(0);
+  const [countdown, setCountdown] = useState(30);
   const navigate = useNavigate();
   const { round } = useContext(MyContext);
 
@@ -33,7 +32,6 @@ const Game = () => {
         `${BACKEND_URL}/get-user/${localStorage.getItem("userId")}`
       );
       console.log(res);
-      setScore(res.data.score);
     };
     fetchUser();
   }, []);

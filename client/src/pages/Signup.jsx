@@ -22,6 +22,7 @@ const Signup = () => {
         navigate("/home");
       },1000)
     } catch (error) {
+      toast.error("Empty name is not allowed")
       console.error("Error during signup:", error);
       setLoading(false);
     }

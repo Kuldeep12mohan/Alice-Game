@@ -8,7 +8,7 @@ const Home = () => {
   const [roomId, setRoomId] = useState("");
   const navigate = useNavigate();
   const [text] = useTypewriter({
-    words: ["Welcome to LoosoTreat!"],
+    words: ["Welcome to Close Call!"],
     loop: true,
   });
 
